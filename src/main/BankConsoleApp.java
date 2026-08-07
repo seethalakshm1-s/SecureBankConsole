@@ -25,7 +25,10 @@ public class BankConsoleApp {
             System.out.println("4. Check Balance");
             System.out.println("5. Close Account");
             System.out.println("6. Display All Accounts");
-            System.out.println("7. Exit");
+            System.out.println("7. Transfer Money");
+            System.out.println("8. Reverse Last Transaction");
+            System.out.println("9. Find Accounts By Customer");
+            System.out.println("10. Exit");
             System.out.print("Enter your choice: ");
 
             choice = sc.nextInt();
@@ -59,7 +62,16 @@ public class BankConsoleApp {
                         break;
 
                     case 7:
-                        System.out.println("\nThank you for using Secure Bank!");
+                        bankService.transfer(sc);
+                        break;
+                    case 8:
+                        bankService.reverseLastTransaction(sc);
+                        break;
+                    case 9:
+                        bankService.findAccountsByCustomer(sc);
+                        break;
+                    case 10:
+                        System.out.println("Thank You!");
                         break;
 
                     default:
@@ -70,7 +82,7 @@ public class BankConsoleApp {
                 System.out.println(e.getMessage());
             }
 
-        } while (choice != 7);
+        } while (choice != 10);
 
         sc.close();
     }
