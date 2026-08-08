@@ -5,6 +5,7 @@ import java.util.Scanner;
 import service.BankService;
 import exception.AccountNotFoundException;
 import exception.InsufficientFundsException;
+import model.Transaction;
 
 public class BankConsoleApp {
 
@@ -28,7 +29,8 @@ public class BankConsoleApp {
             System.out.println("7. Transfer Money");
             System.out.println("8. Reverse Last Transaction");
             System.out.println("9. Find Accounts By Customer");
-            System.out.println("10. Exit");
+            System.out.println("10. Display Transaction History");
+            System.out.println("11. Exit");
             System.out.print("Enter your choice: ");
 
             choice = sc.nextInt();
@@ -71,8 +73,11 @@ public class BankConsoleApp {
                         bankService.findAccountsByCustomer(sc);
                         break;
                     case 10:
+                         bankService.displayTransactionHistory(sc);
+                          break;
+                    case 11:
                         System.out.println("Thank You!");
-                        break;
+                        return;
 
                     default:
                         System.out.println("Invalid Choice!");
@@ -82,7 +87,7 @@ public class BankConsoleApp {
                 System.out.println(e.getMessage());
             }
 
-        } while (choice != 10);
+        } while (choice != 11);
 
         sc.close();
     }

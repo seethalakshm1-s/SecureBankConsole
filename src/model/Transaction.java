@@ -30,9 +30,12 @@ public class Transaction {
     public int getToAccountId() {
         return toAccountId;
     }
-
     @Override
     public String toString() {
-        return "Transaction{" +"type='" + type + '\'' + ", amount=" + amount + ", fromAccountId=" + fromAccountId +", toAccountId=" + toAccountId + '}';
-    }
+    return "Transaction Type : " + type +
+           "\nAmount : ₹" + amount +
+           "\nFrom Account : " + fromAccountId +
+           "\nTo Account : " + toAccountId;
+}
+
 }

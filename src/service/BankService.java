@@ -311,4 +311,35 @@ public class BankService {
             System.out.println( "----------------------------");
         }
     }
+    public void displayTransactionHistory(Scanner sc)
+        throws AccountNotFoundException {
+
+    System.out.print("Enter Account ID: ");
+    int id = sc.nextInt();
+
+    if (!accounts.containsKey(id)) {
+        throw new AccountNotFoundException("Account Not Found!");
+    }
+
+    Account account = accounts.get(id);
+
+    List<Transaction> transactions = account.getTransactions();
+
+    if (transactions.isEmpty()) {
+        System.out.println("No Transaction History Available.");
+        return;
+    }
+
+    System.out.println("\n===== Transaction History =====");
+    System.out.println("Account ID : " + account.getId());
+    System.out.println("Customer Name : " + account.getCustomerName());
+    System.out.println("Current Balance : ₹" + account.getBalance());
+
+    for (Transaction transaction : transactions) {
+        System.out.println("----------------------------");
+        System.out.println(transaction);
+    }
+
+    System.out.println("----------------------------");
+}
 }
