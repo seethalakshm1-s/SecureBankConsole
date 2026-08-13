@@ -1,11 +1,6 @@
-package main;
+
 
 import java.util.Scanner;
-
-import service.BankService;
-import exception.AccountNotFoundException;
-import exception.InsufficientFundsException;
-import model.Transaction;
 
 public class BankConsoleApp {
 
@@ -83,7 +78,7 @@ public class BankConsoleApp {
                         System.out.println("Invalid Choice!");
                 }
 
-            } catch (AccountNotFoundException | InsufficientFundsException e) {
+            } catch ( AccountNotFoundException| InsufficientFundsException e) {
                 System.out.println(e.getMessage());
             }
 
