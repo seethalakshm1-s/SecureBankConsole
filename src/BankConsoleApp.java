@@ -1,4 +1,4 @@
-
+import java.time.LocalDateTime;
 
 import java.util.Scanner;
 
@@ -8,6 +8,7 @@ public class BankConsoleApp {
 
         Scanner sc = new Scanner(System.in);
         BankService bankService = new BankService();
+        StatementService statementService = new StatementService();
 
         int choice;
 
@@ -25,7 +26,10 @@ public class BankConsoleApp {
             System.out.println("8. Reverse Last Transaction");
             System.out.println("9. Find Accounts By Customer");
             System.out.println("10. Display Transaction History");
-            System.out.println("11. Exit");
+            System.out.println("11. Display Accounts Sorted By ID");
+            System.out.println("12. Display Accounts Sorted By Balance");
+            System.out.println("13. Display Transactions By Date Range");
+            System.out.println("14. Exit");
             System.out.print("Enter your choice: ");
 
             choice = sc.nextInt();
@@ -71,6 +75,45 @@ public class BankConsoleApp {
                          bankService.displayTransactionHistory(sc);
                           break;
                     case 11:
+                        statementService.displayAccountsSortedById(
+                                bankService.getAccounts()
+                        );
+                        break;
+
+                    case 12:
+                        statementService.displayAccountsSortedByBalance(
+                                bankService.getAccounts()
+                        );
+                        break;
+                    case 13:
+
+    System.out.print("Enter Account ID: ");
+    int accountId = sc.nextInt();
+
+    System.out.print("Enter start date and time (yyyy-MM-ddTHH:mm): ");
+    String startInput = sc.next();
+
+    System.out.print("Enter end date and time (yyyy-MM-ddTHH:mm): ");
+    String endInput = sc.next();
+
+    LocalDateTime start =
+            LocalDateTime.parse(startInput);
+
+    LocalDateTime end =
+            LocalDateTime.parse(endInput);
+
+    Account account =
+            bankService.getAccounts().get(accountId);
+
+    if (account == null) {
+        System.out.println("Account not found!");
+    } else {
+        statementService.displayTransactionStatement(account,start, end);
+    }
+
+    break;
+
+                    case 14:
                         System.out.println("Thank You!");
                         return;
 
@@ -81,8 +124,12 @@ public class BankConsoleApp {
             } catch ( AccountNotFoundException| InsufficientFundsException e) {
                 System.out.println(e.getMessage());
             }
+            catch (Exception e) {
 
-        } while (choice != 11);
+                System.out.println("Invalid input: " + e.getMessage());
+            }
+
+        } while (choice != 14);
 
         sc.close();
     }

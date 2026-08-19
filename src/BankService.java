@@ -1,5 +1,3 @@
-
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,12 +7,9 @@ import java.util.Scanner;
 public class BankService {
 
     private HashMap<Integer, Account> accounts = new HashMap<>();
-
-    private HashMap<String, List<Integer>> customerIndex =
-            new HashMap<>();
+    private HashMap<String, List<Integer>> customerIndex = new HashMap<>();
 
     private int nextAccountId = 1001;
-
 
     public void createAccount(Scanner sc) {
 
@@ -23,77 +18,85 @@ public class BankService {
         System.out.print("Enter Customer Name: ");
         String name = sc.nextLine();
 
-        Account account =
-                new Account(nextAccountId, name, 0);
+        Account account = new Account(nextAccountId, name, 0);
 
         accounts.put(nextAccountId, account);
 
-        customerIndex
-                .computeIfAbsent(name, key -> new ArrayList<>())
-                .add(nextAccountId);
+        if (!customerIndex.containsKey(name)) {
+            customerIndex.put(name, new ArrayList<>());
+        }
+
+        
+        customerIndex.get(name).add(nextAccountId);
 
         System.out.println("Account Created Successfully!");
-        System.out.println("Account ID : " + nextAccountId);
+        System.out.println("Account ID: " + nextAccountId);
 
         nextAccountId++;
     }
 
+public void deposit(Scanner sc) throws AccountNotFoundException {
 
-    public void deposit(Scanner sc)
-            throws AccountNotFoundException {
+    System.out.print("Enter Account ID: ");
+    int id = sc.nextInt();
 
-        System.out.print("Enter Account ID: ");
-        int id = sc.nextInt();
+    System.out.print("Enter Amount: ");
+    double amount = sc.nextDouble();
 
-        System.out.print("Enter Amount: ");
-        double amount = sc.nextDouble();
+    Account account = accounts.get(id);
 
-        if (!accounts.containsKey(id)) {
-            throw new AccountNotFoundException("Account Not Found!");
-        }
-
-        Account account = accounts.get(id);
-
-        account.setBalance(account.getBalance() + amount);
-
-        Transaction transaction =new Transaction( "DEPOSIT", amount,id,id);
-
-        account.addTransaction(transaction);
-
-        System.out.println("Deposit Successful!");
-        System.out.println("Current Balance : " + account.getBalance());
+    if (account == null) {
+        throw new AccountNotFoundException("Account Not Found!");
     }
 
-   
-    public void withdraw(Scanner sc)throws AccountNotFoundException,InsufficientFundsException {
-
-        System.out.print("Enter Account ID: ");
-        int id = sc.nextInt();
-
-        System.out.print("Enter Amount: ");
-        double amount = sc.nextDouble();
-
-        if (!accounts.containsKey(id)) {
-            throw new AccountNotFoundException("Account Not Found!");
-        }
-
-        Account account = accounts.get(id);
-
-        if (amount > account.getBalance()) {
-            throw new InsufficientFundsException("Insufficient Funds!");
-        }
-
-        account.setBalance(account.getBalance() - amount);
-
-        Transaction transaction =new Transaction(  "WITHDRAW",amount,id, id);
-
-        account.addTransaction(transaction);
-
-        System.out.println("Withdrawal Successful!");
-        System.out.println("Current Balance : " + account.getBalance());
+    if (amount <= 0) {
+        System.out.println("Amount must be greater than zero.");
+        return;
     }
 
-    
+    double balance = account.getBalance();
+
+    account.setBalance(balance + amount);
+
+    Transaction transaction =
+            new Transaction("DEPOSIT", amount, id, id);
+
+    account.addTransaction(transaction);
+
+    System.out.println("Deposit Successful!");
+    System.out.println("Current Balance: " + account.getBalance());
+}
+  public void withdraw(Scanner sc)
+        throws AccountNotFoundException, InsufficientFundsException {
+
+    System.out.print("Enter Account ID: ");
+    int id = sc.nextInt();
+
+    System.out.print("Enter Amount: ");
+    double amount = sc.nextDouble();
+
+    Account account = accounts.get(id);
+
+    if (account == null) {
+        throw new AccountNotFoundException("Account Not Found!");
+    }
+    if (amount <= 0) {
+        System.out.println("Amount must be greater than zero.");
+        return;
+    }
+
+    if (amount > account.getBalance()) {
+        throw new InsufficientFundsException("Not Enough Balance!");
+    }
+
+    account.setBalance(account.getBalance() - amount);
+    Transaction transaction =new Transaction("WITHDRAW", amount, id, id);
+
+    account.addTransaction(transaction);
+
+    System.out.println("Withdraw Successful!");
+    System.out.println("Balance: " + account.getBalance());
+}
     public void transfer(Scanner sc)throws AccountNotFoundException,InsufficientFundsException {
 
         System.out.print("Enter Sender Account ID: ");
@@ -336,4 +339,7 @@ public class BankService {
 
     System.out.println("----------------------------");
 }
+    public HashMap<Integer, Account> getAccounts() {
+        return accounts;
+    }
 }

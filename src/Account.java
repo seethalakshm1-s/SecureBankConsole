@@ -49,7 +49,7 @@ public Transaction removeLastTransaction() {
 }
   
 
-    @Override
+
     public String toString() {
         return "Account ID : " + id +
                "\nCustomer Name : " + customerName +

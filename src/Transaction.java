@@ -1,4 +1,4 @@
-
+import java.time.LocalDateTime;
 
 public class Transaction {
 
@@ -6,6 +6,7 @@ public class Transaction {
     private double amount;
     private int fromAccountId;
     private int toAccountId;
+    private LocalDateTime timestamp;
 
     public Transaction(String type, double amount,int fromAccountId, int toAccountId) {
 
@@ -13,6 +14,7 @@ public class Transaction {
         this.amount = amount;
         this.fromAccountId = fromAccountId;
         this.toAccountId = toAccountId;
+        this.timestamp = LocalDateTime.now();
     }
 
     public String getType() {
@@ -30,12 +32,17 @@ public class Transaction {
     public int getToAccountId() {
         return toAccountId;
     }
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
     @Override
     public String toString() {
     return "Transaction Type : " + type +
            "\nAmount : ₹" + amount +
            "\nFrom Account : " + fromAccountId +
-           "\nTo Account : " + toAccountId;
+           "\nTo Account : " + toAccountId+
+           "\nDate & Time : " + timestamp;
 }
 
 }
