@@ -1,15 +1,15 @@
-
-
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
-
+import java.util.Map;
+import java.util.TreeMap;
 public class Account {
 
     private int id;
     private String customerName;
     private double balance;
 
-    private List<Transaction> transactions = new ArrayList<>();
+     private TreeMap<LocalDateTime, Transaction> transactions = new TreeMap<>();
+
 
     public Account(int id, String customerName, double balance) {
         this.id = id;
@@ -32,21 +32,22 @@ public class Account {
     public void setBalance(double balance) {
         this.balance = balance;
     }
-
-    public List<Transaction> getTransactions() {
+    public Map<LocalDateTime, Transaction> getTransactions() {
         return transactions;
     }
-   public void addTransaction(Transaction transaction) {
-    transactions.add(transaction);
-}
-public Transaction removeLastTransaction() {
+    public void addTransaction(Transaction transaction) {
+      transactions.put(transaction.getTimestamp(), transaction);
+    }
+
+    public Transaction removeLastTransaction() {
 
     if (transactions.isEmpty()) {
         return null;
     }
+     LocalDateTime lastTime = transactions.lastKey();
 
-    return transactions.remove(transactions.size() - 1);
-}
+        return transactions.remove(lastTime);
+    }
   
 
 

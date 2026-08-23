@@ -3,6 +3,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class BankService {
 
@@ -320,8 +323,7 @@ public void deposit(Scanner sc) throws AccountNotFoundException {
 
     Account account = accounts.get(id);
 
-    List<Transaction> transactions = account.getTransactions();
-
+    Map<LocalDateTime, Transaction> transactions = account.getTransactions();
     if (transactions.isEmpty()) {
         System.out.println("No Transaction History Available.");
         return;
@@ -332,7 +334,7 @@ public void deposit(Scanner sc) throws AccountNotFoundException {
     System.out.println("Customer Name : " + account.getCustomerName());
     System.out.println("Current Balance : ₹" + account.getBalance());
 
-    for (Transaction transaction : transactions) {
+    for (Transaction transaction : transactions.values()) {
         System.out.println("----------------------------");
         System.out.println(transaction);
     }
@@ -342,4 +344,96 @@ public void deposit(Scanner sc) throws AccountNotFoundException {
     public HashMap<Integer, Account> getAccounts() {
         return accounts;
     }
+    
+public void displaySortedStatement(Scanner sc)
+        throws AccountNotFoundException {
+
+    System.out.print("Enter Account ID: ");
+    int id = sc.nextInt();
+
+    if (!accounts.containsKey(id)) {
+        throw new AccountNotFoundException("Account Not Found!");
+    }
+
+    Account account = accounts.get(id);
+
+    Map<LocalDateTime, Transaction> transactions =account.getTransactions();
+
+    if (transactions.isEmpty()) {
+        System.out.println("No Transactions Available.");
+        return;
+    }
+
+    System.out.println("\n===== SORTED ACCOUNT STATEMENT =====");
+    System.out.println("Account ID : " + account.getId());
+    System.out.println("Customer Name : " + account.getCustomerName());
+    System.out.println("Current Balance : ₹" + account.getBalance());
+
+    for (Map.Entry<LocalDateTime, Transaction> entry: transactions.entrySet()) {
+
+        System.out.println("----------------------------");
+        System.out.println(entry.getValue());
+    }
+
+    System.out.println("----------------------------");
+}
+
+public void displayTransactionsByRange(Scanner sc)
+        throws AccountNotFoundException {
+
+    System.out.print("Enter Account ID: ");
+    int id = sc.nextInt();
+
+    if (!accounts.containsKey(id)) {
+        throw new AccountNotFoundException("Account Not Found!");
+    }
+
+    Account account = accounts.get(id);
+
+    DateTimeFormatter formatter =
+            DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+
+    sc.nextLine();
+
+    System.out.print("Enter Start Date & Time (dd-MM-yyyy HH:mm): ");
+    String startInput = sc.nextLine();
+
+    System.out.print("Enter End Date & Time (dd-MM-yyyy HH:mm): ");
+    String endInput = sc.nextLine();
+
+    LocalDateTime start =
+            LocalDateTime.parse(startInput, formatter);
+
+    LocalDateTime end =
+            LocalDateTime.parse(endInput, formatter);
+
+    if (start.isAfter(end)) {
+        System.out.println("Start time must be before end time.");
+        return;
+    }
+
+    TreeMap<LocalDateTime, Transaction> transactions =
+            new TreeMap<>(account.getTransactions());
+
+    Map<LocalDateTime, Transaction> range =
+            transactions.subMap(start, true, end, true);
+
+    if (range.isEmpty()) {
+        System.out.println("No Transactions Found In This Range.");
+        return;
+    }
+
+    System.out.println("\n===== TRANSACTIONS IN RANGE =====");
+
+    for (Transaction transaction : range.values()) {
+        System.out.println("----------------------------");
+        System.out.println(transaction);
+    }
+
+    System.out.println("----------------------------");
+}
+
+
+
+
 }

@@ -5,39 +5,34 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 public class StatementService {
+    
+public void displayTransactionStatement(
+        Account account,
+        LocalDateTime start,
+        LocalDateTime end) {
 
-    public void displayTransactionStatement(
-            Account account,
-            LocalDateTime start,
-            LocalDateTime end) {
+    TreeMap<LocalDateTime, Transaction> transactions =
+            new TreeMap<>(account.getTransactions());
 
-        TreeMap<LocalDateTime, Transaction> transactions =
-                new TreeMap<>();
+    NavigableMap<LocalDateTime, Transaction> result =
+            transactions.subMap(start, true, end, true);
 
-        for (Transaction transaction : account.getTransactions()) {
-            transactions.put(
-                    transaction.getTimestamp(),
-                    transaction
-            );
-        }
+    System.out.println("\n===== Transaction Statement =====");
+    System.out.println("Account ID : " + account.getId());
+    System.out.println("Customer Name : " + account.getCustomerName());
 
-        NavigableMap<LocalDateTime, Transaction> result =
-                transactions.subMap(start, true, end, true);
-
-        System.out.println("\n===== Transaction Statement =====");
-        System.out.println("Account ID : " + account.getId());
-        System.out.println("Customer Name : " + account.getCustomerName());
-
-        if (result.isEmpty()) {
-            System.out.println("No transactions found in this date range.");
-            return;
-        }
-
-        for (Transaction transaction : result.values()) {
-            System.out.println("----------------------------");
-            System.out.println(transaction);
-        }
+    if (result.isEmpty()) {
+        System.out.println("No transactions found in this date range.");
+        return;
     }
+
+    for (Transaction transaction : result.values()) {
+        System.out.println("----------------------------");
+        System.out.println(transaction);
+    }
+}
+
+
 
     public void displayAccountsSortedById(
             HashMap<Integer, Account> accounts) {
@@ -70,4 +65,6 @@ public class StatementService {
             System.out.println(entry.getValue());
         }
     }
+    
+
 }
