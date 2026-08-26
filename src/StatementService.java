@@ -1,5 +1,8 @@
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -11,12 +14,16 @@ public void displayTransactionStatement(
         LocalDateTime start,
         LocalDateTime end) {
 
-    TreeMap<LocalDateTime, Transaction> transactions =
-            new TreeMap<>(account.getTransactions());
+    TreeMap<TransactionKey, Transaction> transactions =
+        new TreeMap<>(account.getTransactions());
 
-    NavigableMap<LocalDateTime, Transaction> result =
-            transactions.subMap(start, true, end, true);
-
+NavigableMap<TransactionKey, Transaction> result =
+        transactions.subMap(
+                new TransactionKey(start),
+                true,
+                new TransactionKey(end),
+                false
+        );
     System.out.println("\n===== Transaction Statement =====");
     System.out.println("Account ID : " + account.getId());
     System.out.println("Customer Name : " + account.getCustomerName());
@@ -48,23 +55,47 @@ public void displayTransactionStatement(
         }
     }
 
-    public void displayAccountsSortedByBalance(
-            HashMap<Integer, Account> accounts) {
+   public void displayAccountsSortedByBalance(
+        HashMap<Integer, Account> accounts) {
 
-        TreeMap<Double, Account> sortedAccounts =
-                new TreeMap<>();
+    List<Account> sortedAccounts =
+            new ArrayList<>(accounts.values());
 
-        for (Account account : accounts.values()) {
-            sortedAccounts.put(account.getBalance(), account);
-        }
+    sortedAccounts.sort(
+            Comparator.comparingDouble(Account::getBalance)
+                      .thenComparingInt(Account::getId)
+    );
 
-        System.out.println("\n===== Accounts Sorted By Balance =====");
+    System.out.println("\n===== Accounts Sorted By Balance =====");
 
-        for (Map.Entry<Double, Account> entry : sortedAccounts.entrySet()) {
-            System.out.println("----------------------------");
-            System.out.println(entry.getValue());
-        }
+    for (Account account : sortedAccounts) {
+        System.out.println("----------------------------");
+        System.out.println(account);
     }
-    
+}
+public void demonstrateTreeMapNavigation(
+        HashMap<Integer, Account> accounts) {
 
+    TreeMap<Integer, Account> sortedAccounts =
+            new TreeMap<>(accounts);
+
+    System.out.println("\n===== TreeMap Navigation =====");
+
+    System.out.println("Account IDs: " + sortedAccounts.keySet());
+
+    System.out.println("ceilingKey(104) = "
+            + sortedAccounts.ceilingKey(104));
+
+    System.out.println("floorKey(104) = "
+            + sortedAccounts.floorKey(104));
+
+    System.out.println("headMap(105) = "
+            + sortedAccounts.headMap(105).keySet());
+
+    System.out.println("tailMap(105) = "
+            + sortedAccounts.tailMap(105).keySet());
+
+    System.out.println("subMap(100, 108) = "
+            + sortedAccounts.subMap(100, 108).keySet());
+}
 }

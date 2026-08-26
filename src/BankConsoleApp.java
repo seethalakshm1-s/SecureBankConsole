@@ -3,134 +3,146 @@ import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class BankConsoleApp {
+    public static void main(String[] args) throws AccountNotFoundException, InsufficientFundsException {
+    Scanner sc = new Scanner(System.in);
 
-    public static void main(String[] args) {
+    BankService bankService = new BankService();
+    StatementService statementService = new StatementService();
 
-        Scanner sc = new Scanner(System.in);
-        BankService bankService = new BankService();
-        StatementService statementService = new StatementService();
+    int choice;
 
-        int choice;
+    while (true) {
 
-        do {
-            System.out.println("\n==================================");
-            System.out.println("      Secure Bank System");
-            System.out.println("==================================");
-            System.out.println("1. Create Account");
-            System.out.println("2. Deposit");
-            System.out.println("3. Withdraw");
-            System.out.println("4. Check Balance");
-            System.out.println("5. Close Account");
-            System.out.println("6. Display All Accounts");
-            System.out.println("7. Transfer Money");
-            System.out.println("8. Reverse Last Transaction");
-            System.out.println("9. Find Accounts By Customer");
-            System.out.println("10. Display Transaction History");
-            System.out.println("11. Display Accounts Sorted By ID");
-            System.out.println("12. Display Accounts Sorted By Balance");
-            System.out.println("13. Display Transactions By Date Range");
-            System.out.println("14. Exit");
-            System.out.print("Enter your choice: ");
+        System.out.println("\n==================================");
+        System.out.println("      Secure Bank System");
+        System.out.println("==================================");
 
-            choice = sc.nextInt();
+        System.out.println("1. Create Account");
+        System.out.println("2. Deposit");
+        System.out.println("3. Withdraw");
+        System.out.println("4. Check Balance");
+        System.out.println("5. Close Account");
+        System.out.println("6. Display All Accounts");
+        System.out.println("7. Transfer Money");
+        System.out.println("8. Reverse Last Transaction");
+        System.out.println("9. Find Accounts By Customer");
+        System.out.println("10. Display Transaction History");
+        System.out.println("11. Display Accounts Sorted By ID");
+        System.out.println("12. Display Accounts Sorted By Balance");
+        System.out.println("13. Display Transactions By Date Range");
+        System.out.println("14. TreeMap Navigation Demo");
+        System.out.println("15. Exit");
 
-            try {
+        System.out.print("Enter your choice: ");
+        choice = sc.nextInt();
+        switch (choice) {
 
-                switch (choice) {
+    case 1:
+        bankService.createAccount(sc);
+        break;
 
-                    case 1:
-                        bankService.createAccount(sc);
-                        break;
+    case 2:
+        bankService.deposit(sc);
+        break;
 
-                    case 2:
-                        bankService.deposit(sc);
-                        break;
+    case 3:
+        bankService.withdraw(sc);
+        break;
 
-                    case 3:
-                        bankService.withdraw(sc);
-                        break;
+    case 4:
+        bankService.checkBalance(sc);
+        break;
 
-                    case 4:
-                        bankService.checkBalance(sc);
-                        break;
+    case 5:
+        bankService.closeAccount(sc);
+        break;
 
-                    case 5:
-                        bankService.closeAccount(sc);
-                        break;
+    case 6:
+        bankService.displayAccounts();
+        break;
 
-                    case 6:
-                        bankService.displayAccounts();
-                        break;
+    case 7:
+        bankService.transfer(sc);
+        break;
 
-                    case 7:
-                        bankService.transfer(sc);
-                        break;
-                    case 8:
-                        bankService.reverseLastTransaction(sc);
-                        break;
-                    case 9:
-                        bankService.findAccountsByCustomer(sc);
-                        break;
-                    case 10:
-                         bankService.displayTransactionHistory(sc);
-                          break;
-                    case 11:
-                        statementService.displayAccountsSortedById(
-                                bankService.getAccounts()
-                        );
-                        break;
+    case 8:
+        bankService.reverseLastTransaction(sc);
+        break;
 
-                    case 12:
-                        statementService.displayAccountsSortedByBalance(
-                                bankService.getAccounts()
-                        );
-                        break;
-                    case 13:
+    case 9:
+        bankService.findAccountsByCustomer(sc);
+        break;
 
-    System.out.print("Enter Account ID: ");
-    int accountId = sc.nextInt();
+    case 10:
+        bankService.displayTransactionHistory(sc);
+        break;
 
-    System.out.print("Enter start date and time (yyyy-MM-ddTHH:mm): ");
-    String startInput = sc.next();
+    case 11:
+        statementService.displayAccountsSortedById(
+                bankService.getAccounts()
+        );
+        break;
 
-    System.out.print("Enter end date and time (yyyy-MM-ddTHH:mm): ");
-    String endInput = sc.next();
+    case 12:
+        statementService.displayAccountsSortedByBalance(
+                bankService.getAccounts()
+        );
+        break;
 
-    LocalDateTime start =
-            LocalDateTime.parse(startInput);
+    case 13:
 
-    LocalDateTime end =
-            LocalDateTime.parse(endInput);
+        System.out.print("Enter Account ID: ");
+        int accountId = sc.nextInt();
 
-    Account account =
-            bankService.getAccounts().get(accountId);
+        System.out.print(
+                "Enter start date and time (yyyy-MM-ddTHH:mm): "
+        );
+        String startInput = sc.next();
 
-    if (account == null) {
-        System.out.println("Account not found!");
-    } else {
-        statementService.displayTransactionStatement(account,start, end);
-    }
+        System.out.print(
+                "Enter end date and time (yyyy-MM-ddTHH:mm): "
+        );
+        String endInput = sc.next();
 
-    break;
+        LocalDateTime start =
+                LocalDateTime.parse(startInput);
 
-                    case 14:
-                        System.out.println("Thank You!");
-                        return;
+        LocalDateTime end =
+                LocalDateTime.parse(endInput);
 
-                    default:
-                        System.out.println("Invalid Choice!");
-                }
+        Account account =
+                bankService.getAccounts().get(accountId);
 
-            } catch ( AccountNotFoundException| InsufficientFundsException e) {
-                System.out.println(e.getMessage());
-            }
-            catch (Exception e) {
+        if (account == null) {
+            System.out.println("Account not found!");
+        } else {
+            statementService.displayTransactionStatement(
+                    account,
+                    start,
+                    end
+            );
+        }
 
-                System.out.println("Invalid input: " + e.getMessage());
-            }
+        break;
 
-        } while (choice != 14);
+    case 14:
 
+        statementService.demonstrateTreeMapNavigation(
+                bankService.getAccounts()
+        );
+
+        break;
+
+    case 15:
+
+        System.out.println("Thank You!");
         sc.close();
+        return;
+
+    default:
+
+        System.out.println("Invalid Choice!");
+}
     }
+}
 }

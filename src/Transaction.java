@@ -1,7 +1,8 @@
 import java.time.LocalDateTime;
 
 public class Transaction {
-
+    private static int nextTransactionId = 1;
+    private int transactionId;
     private String type;
     private double amount;
     private int fromAccountId;
@@ -15,6 +16,9 @@ public class Transaction {
         this.fromAccountId = fromAccountId;
         this.toAccountId = toAccountId;
         this.timestamp = LocalDateTime.now();
+        this.transactionId = nextTransactionId++;
+        
+
     }
 
     public String getType() {
@@ -35,6 +39,10 @@ public class Transaction {
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
+    public int getTransactionId() {
+         return transactionId;
+}
+
 
     @Override
     public String toString() {

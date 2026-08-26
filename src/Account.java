@@ -1,6 +1,3 @@
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 public class Account {
 
@@ -8,7 +5,7 @@ public class Account {
     private String customerName;
     private double balance;
 
-     private TreeMap<LocalDateTime, Transaction> transactions = new TreeMap<>();
+    private TreeMap<TransactionKey, Transaction> transactions = new TreeMap<>();
 
 
     public Account(int id, String customerName, double balance) {
@@ -32,24 +29,28 @@ public class Account {
     public void setBalance(double balance) {
         this.balance = balance;
     }
-    public Map<LocalDateTime, Transaction> getTransactions() {
-        return transactions;
-    }
-    public void addTransaction(Transaction transaction) {
-      transactions.put(transaction.getTimestamp(), transaction);
-    }
+   public TreeMap<TransactionKey, Transaction> getTransactions() {
+    return transactions;
+}
+   public void addTransaction(Transaction transaction) {
 
-    public Transaction removeLastTransaction() {
+    transactions.put(
+            new TransactionKey(
+                    transaction.getTimestamp(),
+                    transaction.getTransactionId()
+            ),
+            transaction
+    );
+}
+public Transaction removeLastTransaction() {
 
     if (transactions.isEmpty()) {
         return null;
     }
-     LocalDateTime lastTime = transactions.lastKey();
-
-        return transactions.remove(lastTime);
-    }
+    TransactionKey lastKey = transactions.lastKey();
+    return transactions.remove(lastKey);
   
-
+}
 
     public String toString() {
         return "Account ID : " + id +
