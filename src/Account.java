@@ -7,6 +7,8 @@ public class Account {
 
     private TreeMap<TransactionKey, Transaction> transactions = new TreeMap<>();
 
+    public Account() {
+    }
 
     public Account(int id, String customerName, double balance) {
         this.id = id;
@@ -17,9 +19,16 @@ public class Account {
     public int getId() {
         return id;
     }
+     public void setId(int id) {
+        this.id = id;
+    }
+
 
     public String getCustomerName() {
         return customerName;
+    }
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
     public double getBalance() {
@@ -31,7 +40,11 @@ public class Account {
     }
    public TreeMap<TransactionKey, Transaction> getTransactions() {
     return transactions;
-}
+   }
+    public void setTransactions(TreeMap<TransactionKey, Transaction> transactions) {
+        this.transactions = transactions;
+    }
+
    public void addTransaction(Transaction transaction) {
 
     transactions.put(

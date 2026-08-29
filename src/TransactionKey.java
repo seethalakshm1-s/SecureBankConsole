@@ -5,6 +5,9 @@ public class TransactionKey implements Comparable<TransactionKey> {
     private LocalDateTime timestamp;
     private int transactionId;
 
+    public TransactionKey() {
+    }
+
     public TransactionKey(LocalDateTime timestamp, int transactionId){
         this.timestamp = timestamp;
         this.transactionId = transactionId;
@@ -16,6 +19,13 @@ public class TransactionKey implements Comparable<TransactionKey> {
 
     public int getTransactionId() {
         return transactionId;
+    }
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setTransactionId(int transactionId) {
+        this.transactionId = transactionId;
     }
     public TransactionKey(LocalDateTime timestamp) {
         this.timestamp = timestamp;

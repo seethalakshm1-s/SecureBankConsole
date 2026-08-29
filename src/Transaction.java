@@ -9,6 +9,9 @@ public class Transaction {
     private int toAccountId;
     private LocalDateTime timestamp;
 
+    public Transaction() {
+    }
+
     public Transaction(String type, double amount,int fromAccountId, int toAccountId) {
 
         this.type = type;
@@ -41,7 +44,30 @@ public class Transaction {
     }
     public int getTransactionId() {
          return transactionId;
-}
+    }
+    public void setTransactionId(int transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public void setFromAccountId(int fromAccountId) {
+        this.fromAccountId = fromAccountId;
+    }
+
+    public void setToAccountId(int toAccountId) {
+        this.toAccountId = toAccountId;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
 
 
     @Override
