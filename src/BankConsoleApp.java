@@ -31,7 +31,8 @@ public class BankConsoleApp {
         System.out.println("12. Display Accounts Sorted By Balance");
         System.out.println("13. Display Transactions By Date Range");
         System.out.println("14. TreeMap Navigation Demo");
-        System.out.println("15. Exit");
+        System.out.println("15. Export Transaction to JSON");
+        System.out.println("16. Exit");
 
         System.out.print("Enter your choice: ");
         choice = sc.nextInt();
@@ -132,8 +133,38 @@ public class BankConsoleApp {
         );
 
         break;
-
     case 15:
+        System.out.print("Enter Account ID: ");
+        int jsonAccountId = sc.nextInt();
+
+        Account jsonAccount = bankService.getAccounts().get(jsonAccountId);
+
+        if (jsonAccount == null) {
+            System.out.println("Account not found!");
+            break;
+        }
+
+        if (jsonAccount.getTransactions().isEmpty()) {
+            System.out.println("No transactions available.");
+             break;
+        }
+
+        Transaction transaction =jsonAccount.getTransactions().lastEntry().getValue();
+
+        JsonService jsonService = new JsonService();
+
+        try {
+             String json = jsonService.transactionToJson(transaction);
+
+            System.out.println("\n===== Transaction JSON =====");
+            System.out.println(json);
+
+        } catch (Exception e) {
+    System.out.println("JSON conversion failed: " + e.getMessage());
+}
+
+             break;
+    case 16:
 
         System.out.println("Thank You!");
         sc.close();

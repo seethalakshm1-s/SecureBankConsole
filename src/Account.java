@@ -64,6 +64,9 @@ public Transaction removeLastTransaction() {
     return transactions.remove(lastKey);
   
 }
+public void removeTransaction(Transaction transaction) { 
+    TransactionKey key = new TransactionKey( transaction.getTimestamp(), transaction.getTransactionId() ); transactions.remove(key); 
+}
 
     public String toString() {
         return "Account ID : " + id +

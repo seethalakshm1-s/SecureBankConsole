@@ -192,22 +192,27 @@ public class BankService {
         } else if (type.equals("WITHDRAW")) {
             account.setBalance(account.getBalance() + amount);
 
-        } else if (type.equals("TRANSFER")) {
+        }else if (type.equals("TRANSFER")) {
+            
+             Account sender = accounts.get(transaction.getFromAccountId());
 
-            Account sender =  accounts.get( transaction.getFromAccountId());
+             Account receiver = accounts.get(transaction.getToAccountId());
+             if (sender != null && receiver != null) {
 
-            Account receiver =accounts.get(transaction.getToAccountId());
-
-            if (sender != null && receiver != null) {
                 sender.setBalance(sender.getBalance() + amount);
 
                 receiver.setBalance(receiver.getBalance() - amount);
 
-                if (receiver != account) {
-                    receiver.removeLastTransaction();
-                }
+            if (sender != account) {
+                 sender.removeTransaction(transaction);
+            }
+
+            if (receiver != account) {
+                 receiver.removeTransaction(transaction);
             }
         }
+    }
+
         System.out.println( "Last Transaction Reversed Successfully!");
 
         System.out.println("Current Balance : "+ account.getBalance());
@@ -320,4 +325,5 @@ public class BankService {
         }
         System.out.println("----------------------------");
     }
+   
 }
