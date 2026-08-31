@@ -3,11 +3,11 @@ import java.util.Optional;
 
 public interface AccountRepository {
 
-    void save(Account account);
+    void save(Account account)throws Exception;
 
-    Optional<Account> findById(int id);
+    Optional<Account> findById(int id)throws Exception;
 
-    List<Account> findAll();
+    List<Account> findAll()throws Exception;
 
-    void deleteById(int id);
+    void deleteById(int id)throws Exception;
 }

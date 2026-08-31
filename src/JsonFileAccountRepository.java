@@ -1,237 +1,84 @@
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class JsonFileAccountRepository implements AccountRepository {
 
-    private final File accountsFile;
-    private final File transactionsFile;
-    private final ObjectMapper objectMapper;
+    private final JsonService jsonService = new JsonService();
 
-    public JsonFileAccountRepository() {
-        this("accounts.json", "transactions.json");
-    }
+    private final String fileName = "accounts.json";
 
-    public JsonFileAccountRepository(
-            String accountsFileName,
-            String transactionsFileName) {
+    @Override
+    public void save(Account account) throws Exception {
 
-        this.accountsFile = new File(accountsFileName);
-        this.transactionsFile = new File(transactionsFileName);
+        List<Account> accounts = findAll();
 
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.registerModule(new JavaTimeModule());
+        Optional<Account> oldAccount = findById(account.getId());
+
+        if (oldAccount.isPresent()) {
+            accounts.remove(oldAccount.get());
+        }
+
+        accounts.add(account);
+
+        String json = jsonService.accountsToJson(accounts);
+
+        java.nio.file.Files.writeString(
+            java.nio.file.Path.of(fileName),
+            json
+        );
     }
 
     @Override
-    public void save(Account account) {
+    public Optional<Account> findById(int id) throws Exception {
 
-        List<AccountDTO> accountDTOs = readAccountDTOs();
+        List<Account> accounts = findAll();
 
-        AccountDTO dto = new AccountDTO(
-                account.getId(),
-                account.getCustomerName(),
-                account.getBalance()
-        );
+        for (Account account : accounts) {
 
-        boolean updated = false;
-
-        for (int i = 0; i < accountDTOs.size(); i++) {
-
-            if (accountDTOs.get(i).getId() == account.getId()) {
-                accountDTOs.set(i, dto);
-                updated = true;
-                break;
+            if (account.getId() == id) {
+                return Optional.of(account);
             }
         }
 
-        if (!updated) {
-            accountDTOs.add(dto);
-        }
-
-        writeAccountDTOs(accountDTOs);
-
-        saveTransactionsForAccount(account);
+        return Optional.empty();
     }
 
     @Override
-    public Optional<Account> findById(int id) {
+    public List<Account> findAll() throws Exception {
 
-        return findAll()
-                .stream()
-                .filter(account -> account.getId() == id)
-                .findFirst();
-    }
+        File file = new File(fileName);
 
-    @Override
-    public List<Account> findAll() {
-
-        List<AccountDTO> accountDTOs = readAccountDTOs();
-
-        List<Account> accounts = new ArrayList<>();
-
-        for (AccountDTO dto : accountDTOs) {
-
-            Account account = new Account(
-                    dto.getId(),
-                    dto.getCustomerName(),
-                    dto.getBalance()
-            );
-
-            loadTransactionsForAccount(account);
-
-            accounts.add(account);
-        }
-
-        return accounts;
-    }
-
-    @Override
-    public void deleteById(int id) {
-
-        List<AccountDTO> accountDTOs = readAccountDTOs();
-
-        boolean removed = accountDTOs.removeIf(
-                dto -> dto.getId() == id
-        );
-
-        if (removed) {
-            writeAccountDTOs(accountDTOs);
-            deleteTransactionsForAccount(id);
-        }
-    }
-
-    private List<AccountDTO> readAccountDTOs() {
-
-        if (!accountsFile.exists()) {
+        if (!file.exists()) {
             return new ArrayList<>();
         }
 
-        try {
+        String json = java.nio.file.Files.readString(
+            file.toPath()
+        );
 
-            return objectMapper.readValue(
-                    accountsFile,
-                    new TypeReference<List<AccountDTO>>() {}
-            );
-
-        } catch (IOException e) {
-
-            throw new RuntimeException(
-                    "Unable to read accounts.json",
-                    e
-            );
-        }
-    }
-
-    private void writeAccountDTOs(List<AccountDTO> accountDTOs) {
-
-        try {
-
-            objectMapper.writerWithDefaultPrettyPrinter()
-                    .writeValue(accountsFile, accountDTOs);
-
-        } catch (IOException e) {
-
-            throw new RuntimeException(
-                    "Unable to write accounts.json",
-                    e
-            );
-        }
-    }
-
-    private List<TransactionRecordDTO> readTransactionRecords() {
-
-        if (!transactionsFile.exists()) {
+        if (json.isEmpty()) {
             return new ArrayList<>();
         }
 
-        try {
-
-            return objectMapper.readValue(
-                    transactionsFile,
-                    new TypeReference<List<TransactionRecordDTO>>() {}
-            );
-
-        } catch (IOException e) {
-
-            throw new RuntimeException(
-                    "Unable to read transactions.json",
-                    e
-            );
-        }
+        return jsonService.jsonToAccounts(json);
     }
 
-    private void writeTransactionRecords(
-            List<TransactionRecordDTO> records) {
+    @Override
+    public void deleteById(int id) throws Exception {
 
-        try {
+        List<Account> accounts = findAll();
 
-            objectMapper.writerWithDefaultPrettyPrinter()
-                    .writeValue(transactionsFile, records);
-
-        } catch (IOException e) {
-
-            throw new RuntimeException(
-                    "Unable to write transactions.json",
-                    e
-            );
-        }
-    }
-
-    private void saveTransactionsForAccount(Account account) {
-
-        List<TransactionRecordDTO> records =
-                readTransactionRecords();
-
-        records.removeIf(
-                record -> record.getAccountId() == account.getId()
+        accounts.removeIf(
+            account -> account.getId() == id
         );
 
-        for (Transaction transaction :
-                account.getTransactions().values()) {
+        String json = jsonService.accountsToJson(accounts);
 
-            records.add(
-                    new TransactionRecordDTO(
-                            account.getId(),
-                            transaction
-                    )
-            );
-        }
-
-        writeTransactionRecords(records);
-    }
-
-    private void loadTransactionsForAccount(Account account) {
-
-        List<TransactionRecordDTO> records =
-                readTransactionRecords();
-
-        for (TransactionRecordDTO record : records) {
-
-            if (record.getAccountId() == account.getId()) {
-
-                account.addTransaction(
-                        record.getTransaction()
-                );
-            }
-        }
-    }
-
-    private void deleteTransactionsForAccount(int accountId) {
-
-        List<TransactionRecordDTO> records =
-                readTransactionRecords();
-
-        records.removeIf(
-                record -> record.getAccountId() == accountId
+        java.nio.file.Files.writeString(
+            java.nio.file.Path.of(fileName),
+            json
         );
-
-        writeTransactionRecords(records);
     }
 }
