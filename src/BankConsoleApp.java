@@ -1,9 +1,7 @@
-import java.time.LocalDateTime;
-
 import java.util.Scanner;
 
 public class BankConsoleApp {
-    public static void main(String[] args) throws AccountNotFoundException, InsufficientFundsException {
+   public static void main(String[] args) throws Exception{
     Scanner sc = new Scanner(System.in);
 
     BankService bankService = new BankService();
@@ -79,101 +77,30 @@ public class BankConsoleApp {
         break;
 
     case 11:
-        statementService.displayAccountsSortedById(
-                bankService.getAccounts()
-        );
+        statementService.displayAccountsSortedById( bankService.getAccounts());
         break;
 
     case 12:
-        statementService.displayAccountsSortedByBalance(
-                bankService.getAccounts()
-        );
+        statementService.displayAccountsSortedByBalance(bankService.getAccounts());
         break;
-
     case 13:
-
-        System.out.print("Enter Account ID: ");
-        int accountId = sc.nextInt();
-
-        System.out.print(
-                "Enter start date and time (yyyy-MM-ddTHH:mm): "
-        );
-        String startInput = sc.next();
-
-        System.out.print(
-                "Enter end date and time (yyyy-MM-ddTHH:mm): "
-        );
-        String endInput = sc.next();
-
-        LocalDateTime start =
-                LocalDateTime.parse(startInput);
-
-        LocalDateTime end =
-                LocalDateTime.parse(endInput);
-
-        Account account =
-                bankService.getAccounts().get(accountId);
-
-        if (account == null) {
-            System.out.println("Account not found!");
-        } else {
-            statementService.displayTransactionStatement(
-                    account,
-                    start,
-                    end
-            );
-        }
-
+        bankService.displayTransactionsByRange(sc);
         break;
-
     case 14:
-
-        statementService.demonstrateTreeMapNavigation(
-                bankService.getAccounts()
-        );
-
+        statementService.demonstrateTreeMapNavigation( bankService.getAccounts() );
         break;
+
     case 15:
-        System.out.print("Enter Account ID: ");
-        int jsonAccountId = sc.nextInt();
-
-        Account jsonAccount = bankService.getAccounts().get(jsonAccountId);
-
-        if (jsonAccount == null) {
-            System.out.println("Account not found!");
-            break;
-        }
-
-        if (jsonAccount.getTransactions().isEmpty()) {
-            System.out.println("No transactions available.");
-             break;
-        }
-
-        Transaction transaction =jsonAccount.getTransactions().lastEntry().getValue();
-
-        JsonService jsonService = new JsonService();
-
-        try {
-             String json = jsonService.transactionToJson(transaction);
-
-            System.out.println("\n===== Transaction JSON =====");
-            System.out.println(json);
-
-        } catch (Exception e) {
-    System.out.println("JSON conversion failed: " + e.getMessage());
-}
-
-             break;
+        bankService.exportLastTransactionToJson(sc);
+        break;
     case 16:
-
         System.out.println("Thank You!");
         sc.close();
         return;
-
     default:
-
         System.out.println("Invalid Choice!");
-}
+        break;
+        }
     }
 }
 }

@@ -117,60 +117,52 @@ public class BankService {
             System.out.println(entry.getValue());
             System.out.println("----------------------------");
         }
+    } 
+    public void transfer(Scanner sc)
+        throws AccountNotFoundException, InsufficientFundsException {
+
+    System.out.print("Enter Sender Account ID: ");
+    int fromId = sc.nextInt();
+
+    System.out.print("Enter Receiver Account ID: ");
+    int toId = sc.nextInt();
+
+    System.out.print("Enter Transfer Amount: ");
+    double amount = sc.nextDouble();
+
+    if (amount <= 0) {
+        System.out.println("Amount must be greater than zero.");
+        return;
     }
-    public void transfer(Scanner sc)throws AccountNotFoundException,InsufficientFundsException {
 
-        System.out.print("Enter Sender Account ID: ");
-        int fromId = sc.nextInt();
-        System.out.print("Enter Receiver Account ID: ");
-        int toId = sc.nextInt();
-        System.out.print("Enter Transfer Amount: ");
-        double amount = sc.nextDouble();
-        if (amount <= 0) {
-            System.out.println("Amount must be greater than zero.");
-            return;
-        }
-        Account sender = accounts.get(fromId);
-        Account receiver = accounts.get(toId);
-        if (sender == null) {
-            throw new AccountNotFoundException("Sender Account Not Found!");
-        }
-        if (receiver == null) {
-            throw new AccountNotFoundException("Receiver Account Not Found!");
-        }
+    Account sender = accounts.get(fromId);
+    Account receiver = accounts.get(toId);
 
-        if (amount > sender.getBalance()) {
-            throw new InsufficientFundsException(  "Insufficient Funds!");
-        }
-        double oldSenderBalance = sender.getBalance();
-        double oldReceiverBalance = receiver.getBalance();
-        try {
-            sender.setBalance(
-                    sender.getBalance() - amount);
-
-            receiver.setBalance(
-                    receiver.getBalance() + amount);
-
-            Transaction transaction =
-                    new Transaction(
-                            "TRANSFER",
-                            amount,
-                            fromId,
-                            toId
-                    );
-
-            sender.addTransaction(transaction);
-            receiver.addTransaction(transaction);
-            System.out.println("Transfer Successful!");
-            System.out.println( "Sender Balance : " + sender.getBalance());
-            System.out.println( "Receiver Balance : "+ receiver.getBalance());
-        } catch (Exception e) {
-            sender.setBalance(oldSenderBalance);
-            receiver.setBalance(oldReceiverBalance);
-
-            throw e;
-        }
+    if (sender == null) {
+        throw new AccountNotFoundException("Sender Account Not Found!");
     }
+
+    if (receiver == null) {
+        throw new AccountNotFoundException("Receiver Account Not Found!");
+    }
+
+    if (amount > sender.getBalance()) {
+        throw new InsufficientFundsException("Insufficient Funds!");
+    }
+
+    sender.setBalance(sender.getBalance() - amount);
+
+    receiver.setBalance(receiver.getBalance() + amount);
+
+    Transaction transaction =new Transaction( "TRANSFER",amount, fromId,toId);
+
+    sender.addTransaction(transaction);
+    receiver.addTransaction(transaction);
+
+    System.out.println("Transfer Successful!");
+    System.out.println("Sender Balance : " + sender.getBalance());
+    System.out.println("Receiver Balance : " + receiver.getBalance());
+}
     public void reverseLastTransaction(Scanner sc)throws AccountNotFoundException {
         System.out.print("Enter Account ID: ");
         int id = sc.nextInt();
@@ -325,5 +317,32 @@ public class BankService {
         }
         System.out.println("----------------------------");
     }
+
+    public void exportLastTransactionToJson(Scanner sc) throws Exception {
+
+    System.out.print("Enter Account ID: ");
+    int accountId = sc.nextInt();
+
+    Account account = accounts.get(accountId);
+
+    if (account == null) {
+        System.out.println("Account not found!");
+        return;
+    }
+
+    if (account.getTransactions().isEmpty()) {
+        System.out.println("No transactions available.");
+        return;
+    }
+
+    Transaction transaction =account.getTransactions().lastEntry().getValue();
+
+    JsonService jsonService = new JsonService();
+
+    String json = jsonService.transactionToJson(transaction);
+
+    System.out.println("\n===== Transaction JSON =====");
+    System.out.println(json);
+}
    
 }
